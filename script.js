@@ -50,9 +50,9 @@ window.addEventListener("resize", () => {
     canvas.height = window.innerHeight;
 
 });
-function enterPortfolio() {
-    window.location.href = "home.html";
-}
+
+
+
 const text = `
 > Initializing system...
 > Loading portfolio...
@@ -81,3 +81,109 @@ type();
 btn.onclick = () => {
     window.location.href = "home.html";
 };
+
+// Automatic responsive scale manager
+class ScaleManager {
+    constructor() {
+        this.canvas = document.getElementById("matrix");
+        this.container = document.body;
+        this.scaleFactors = {
+            mobile: 0.8,
+            tablet: 0.9,
+            desktop: 1
+        };
+        
+        this.init();
+        this.setupAutoScale();
+    }
+    
+    init() {
+        this.applyScale();
+    }
+    
+    getDeviceType() {
+        const width = window.innerWidth;
+        if (width < 768) return 'mobile';
+        if (width < 1024) return 'tablet';
+        return 'desktop';
+    }
+    
+    applyScale() {
+        const deviceType = this.getDeviceType();
+        const scale = this.scaleFactors[deviceType];
+        
+        // Scale canvas
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
+        
+        // Scale text elements
+        const textElements = document.querySelectorAll('body, p, h1, h2, h3, h4, h5, h6, button');
+        textElements.forEach(el => {
+            if (deviceType === 'mobile') {
+                el.style.fontSize = (parseFloat(window.getComputedStyle(el).fontSize) * 0.9) + 'px';
+            } else if (deviceType === 'tablet') {
+                el.style.fontSize = (parseFloat(window.getComputedStyle(el).fontSize) * 0.95) + 'px';
+            }
+        });
+    }
+    
+    setupAutoScale() {
+        // Auto-scale on window resize
+        window.addEventListener('resize', () => {
+            this.applyScale();
+        });
+        
+        // Auto-scale on orientation change
+        window.addEventListener('orientationchange', () => {
+            setTimeout(() => this.applyScale(), 100);
+        });
+        
+        // Auto-scale on page load
+        window.addEventListener('load', () => {
+            this.applyScale();
+        });
+    }
+}
+
+// Auto-initialize when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+        new ScaleManager();
+    });
+} else {
+    new ScaleManager();
+}
+// Start EmailJS
+emailjs.init("bm4WdRGvHFXqu3GhT");
+
+document
+.getElementById("contact-form")
+.addEventListener("submit", function(event){
+
+    event.preventDefault();
+
+    emailjs.sendForm(
+        "service_1lml1ek",
+        "template_po6c3sp",
+        this
+    )
+
+    .then(function(){
+
+        alert("Message Sent Successfully");
+
+        document
+        .getElementById("contact-form")
+        .reset();
+
+    })
+
+    .catch(function(error){
+
+        alert("Failed To Send Message");
+
+        console.log(error);
+
+    });
+
+});
